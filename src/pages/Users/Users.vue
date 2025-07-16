@@ -3,9 +3,7 @@
     <div class="table__box">
       <section class="header">
         <h2>Foydalanuvchilar</h2>
-        <p>
-          Jami foydalanuvchilar: <span>{{ $store.state.count }}</span>
-        </p>
+        <p>Jami foydalanuvchilar: <span>{{ users.length }}</span></p>
         <article>
           <input
             type="text"
@@ -16,9 +14,10 @@
           <input
             type="text"
             class="filter"
-            placeholder="Foydalanuvchi kodi bo'yicha "
+            placeholder="Foydalanuvchi kodi bo'yicha"
+            v-model="codeQuery"
           />
-          <button class="btn btn-primary" @click="toggleModal()">
+          <button class="filter" @click="toggleModal()">
             + Foydalanuvchi qo'shish
           </button>
         </article>
@@ -28,27 +27,30 @@
         <table class="table table-hover">
           <thead>
             <tr>
-              <th class="th" scope="col">#</th>
-              <th class="th" scope="col">To‘liq ismi</th>
-              <th class="th" scope="col">Telefon</th>
-              <th class="th" scope="col">Elektron pochta</th>
-              <th class="th" scope="col">Foydalanuvchi kodi</th>
-              <th class="th" scope="col">Yaratilgan sana</th>
-              <th class="th" scope="col">Amallar</th>
+              <th class="th">#</th>
+              <th class="th">To‘liq ismi</th>
+              <th class="th">Telefon</th>
+              <th class="th">Elektron pochta</th>
+              <th class="th">Foydalanuvchi kodi</th>
+              <th class="th">Yaratilgan sana</th>
+              <th class="th">Amallar</th>
             </tr>
           </thead>
-          <tbody v-for="(user, index) in filteredUsers" :key="user.id">
-            <tr>
-              <th scope="row">{{ index + 1 }}</th>
+          <tbody>
+            <tr
+              v-for="(user, index) in paginatedUsers"
+              :key="user.id"
+            >
+              <th scope="row">{{ index + 1 + (currentPage - 1) * pageSize }}</th>
               <td>{{ user.name }}</td>
               <td>{{ user.tel }}</td>
               <td>{{ user.email }}</td>
               <td>{{ user.userCod }}</td>
               <td>{{ user.create }}</td>
               <td>
-                <i class="icon bi bi-eye"></i>
-                <i class="icon bi bi-pencil-square"></i>
-                <i class="icon bi bi-trash"></i>
+                <i class="icon bi bi-eye" @click="viewUser(user)"></i>
+                <i class="icon bi bi-pencil-square" @click="editUser(user)"></i>
+                <i class="icon bi bi-trash" @click="deleteUser(user.id)"></i>
               </td>
             </tr>
           </tbody>
@@ -57,29 +59,27 @@
 
       <div class="footer">
         <p class="left">
-          Jami foydalanuvchilar: <span>{{ $store.state.count }}</span>
+          Jami foydalanuvchilar: <span>{{ users.length }}</span>
         </p>
-        <button class="right">1 2</button>
+        <div class="pagination" >
+          <button class="filter" v-for="page in totalPages" :key="page" @click="changePage(page)">
+            {{ page }}
+          </button>
+        </div>
       </div>
     </div>
 
-    <div
-      class="modal"
-      :class="{ modal_none: modal }"
-      @click.self="toggleModal()"
-    >
+    <div class="modal" :class="{ modal_none: modal }" @click.self="toggleModal()">
       <div class="modal_nav">
-        <h1>Yangi foydalanuvchi qo'shish</h1>
+        <h1>{{ isEditMode ? "Foydalanuvchini tahrirlash" : "Yangi foydalanuvchi qo'shish" }}</h1>
         <p>Foydalanuvchi kodi</p>
         <div class="input_checkbox">
           <input
             type="text"
-            :disabled="!this.isActive"
+            :disabled="!isActive"
             ref="userPush"
-            v-model="this.newUser.newCode"
+            v-model="newUser.newCode"
             class="input_number"
-            name="kod"
-            id="1"
           />
           <label class="switch">
             <input type="checkbox" v-model="isActive" />
@@ -88,25 +88,15 @@
         </div>
         <p>To'liq ismi</p>
         <div class="name">
-          <input
-            type="text"
-            class="input"
-            v-model="this.newUser.newName"
-            name="kod"
-            id="1"
-          />
+          <input type="text" class="input" v-model="newUser.newName" />
         </div>
         <p>Elektron pochta</p>
-        <input type="text" name="kod" v-model="this.newUser.newEmail" id="1" />
+        <input type="text" v-model="newUser.newEmail" />
         <p>Telefon raqam</p>
-        <input
-          type="text"
-          name="kod"
-          ref="newPhone"
-          v-model="this.newUser.newPhone"
-          id="1"
-        />
-        <button type="submit" @click="addUser()">Yaratish</button>
+        <input type="text" ref="newPhone" v-model="newUser.newPhone" />
+        <button type="submit" @click="addUser()">
+          {{ isEditMode ? "Saqlash" : "Yaratish" }}
+        </button>
       </div>
     </div>
   </div>
@@ -123,7 +113,12 @@ export default {
       users: [],
       modal: true,
       isActive: false,
-      searchQuery: "", // 🔍 для поиска
+      isEditMode: false,
+      editUserId: null,
+      searchQuery: "",
+      codeQuery: "",
+      currentPage: 1,
+      pageSize: 5,
       newUser: {
         newCode: "",
         newName: "",
@@ -133,55 +128,102 @@ export default {
     };
   },
   mounted() {
-    axios
-      .get("http://localhost:3000/users")
+    axios.get("http://localhost:3000/users")
       .then((res) => {
-        this.users = res.data;
+        this.users = res.data.map((user) => ({
+          ...user,
+          create: user.create || new Date().toISOString().split("T")[0]
+        }));
+        this.$store.state.count = this.users.length;
       })
       .catch((err) => {
-        console.log("xato", err);
+        console.error("Ma'lumot yuklashda xatolik:", err);
       });
 
-    const element = this.$refs.userPush;
-    if (element) {
-      IMask(element, {
-        mask: "CT-00000",
-      });
-    }
-
-    const res = this.$refs.newPhone;
-    if (res) {
-      IMask(res, {
-        mask: "+998 (00) 000-00-00",
-      });
-    }
+    this.$nextTick(() => {
+      if (this.$refs.userPush) {
+        IMask(this.$refs.userPush, { mask: "CT-00000" });
+      }
+      if (this.$refs.newPhone) {
+        IMask(this.$refs.newPhone, { mask: "+998 (00) 000-00-00" });
+      }
+    });
   },
   computed: {
     filteredUsers() {
-      if (!this.searchQuery) return this.users;
-      return this.users.filter((user) =>
-        user.name.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
+      return this.users.filter((user) => {
+        const nameMatch = user.name?.toLowerCase().includes(this.searchQuery.toLowerCase());
+        const codeMatch = user.userCod?.toLowerCase().includes(this.codeQuery?.toLowerCase() || "");
+        return nameMatch && codeMatch;
+      });
     },
+    paginatedUsers() {
+      const start = (this.currentPage==0 ? this.currentPage==2 : this.currentPage - 1 ) * this.pageSize;
+      const end = start + this.pageSize;
+      return this.filteredUsers.slice(start, end);
+    },
+    totalPages() {
+      return Math.ceil(this.filteredUsers.length / this.pageSize);
+    }
   },
   methods: {
     toggleModal() {
       this.modal = !this.modal;
     },
     addUser() {
-      const newUser = {
-        id: Date.now(),
-        name: this.newUser.newName,
-        tel: this.newUser.newPhone,
-        email: this.newUser.newEmail,
-        userCod: this.newUser.newCode,
-        create: new Date().toISOString().split("T")[0], // yyyy-mm-dd
+      if (this.isEditMode) {
+        const user = this.users.find((u) => u.id === this.editUserId);
+        if (user) {
+          user.name = this.newUser.newName;
+          user.tel = this.newUser.newPhone;
+          user.email = this.newUser.newEmail;
+          user.userCod = this.newUser.newCode;
+        }
+      } else {
+        const newUser = {
+          id: Date.now(),
+          name: this.newUser.newName,
+          tel: this.newUser.newPhone,
+          email: this.newUser.newEmail,
+          userCod: this.newUser.newCode,
+          create: new Date().toISOString().split("T")[0],
+        };
+        this.users.push(newUser);
+      }
+      this.$store.state.count = this.users.length;
+      this.resetForm();
+      this.toggleModal();
+    },
+    viewUser(user) {
+      this.isEditMode = false;
+      this.newUser = {
+        newCode: user.userCod,
+        newName: user.name,
+        newEmail: user.email,
+        newPhone: user.tel,
       };
-
-      this.users.push(newUser); // qo‘shish
-      this.$store.state.count = this.users.length; // agar Vuex bor bo‘lsa
-
-      // inputlarni tozalash
+      this.isActive = !!user.userCod;
+      this.modal = true;
+      this.toggleModal()
+    },
+    editUser(user) {
+      this.isEditMode = true;
+      this.editUserId = user.id;
+      this.newUser = {
+        newCode: user.userCod,
+        newName: user.name,
+        newEmail: user.email,
+        newPhone: user.tel,
+      };
+      this.isActive = !!user.userCod;
+      this.modal = true;
+      this.toggleModal()
+    },
+    deleteUser(id) {
+      this.users = this.users.filter((user) => user.id !== id);
+      this.$store.state.count = this.users.length;
+    },
+    resetForm() {
       this.newUser = {
         newCode: "",
         newName: "",
@@ -189,21 +231,26 @@ export default {
         newPhone: "",
       };
       this.isActive = false;
-
-      // modalni yopish
-      this.toggleModal();
+      this.isEditMode = false;
+      this.editUserId = null;
     },
+    changePage(page) {
+      this.currentPage = page;
+    }
   },
   watch: {
     isActive() {
-      if (!this.isActive) {
-        this.newUser.newCode = "";
-      }
+      if (!this.isActive) this.newUser.newCode = "";
     },
+    searchQuery() {
+      this.currentPage = 1;
+    },
+    codeQuery() {
+      this.currentPage = 1;
+    }
   },
 };
 </script>
-
 <style scoped>
 .box {
   position: relative;
@@ -394,5 +441,18 @@ td {
 }
 .switch input:checked + span::before {
   transform: translateX(20px);
+}
+.pagination button {
+  margin-right: 10px;
+  height: 37px;
+  border-radius: 10px;
+  border: none;
+  background-color: rgb(247, 247, 247);
+  font-size: 1rem;
+  padding: 0 12px;
+}
+.pagination button:hover {
+  background-color: #d8d8d8;
+  color: #000;
 }
 </style>

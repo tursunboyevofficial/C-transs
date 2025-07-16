@@ -1,118 +1,160 @@
 <template>
     <div class="box">
-        <div class="table_box">
-            <section class="header">
-            <article>
-                <input type="text" class="filter" placeholder="Foydalanuvchi kodi bo'yicha ">
-                <input type="filter" class="filter" placeholder="Buyurtma raqami bo'yicha qidirish">
-                <div class="btn-group" role="group">
-                    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                  <button type="button" class="btn btn-primary select_btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    Yangi boshidan
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Yangi boshidan</a></li>
-                    <li><a class="dropdown-item" href="#">eski boshidan</a></li>
-                  </ul>
-                </div>
-            </div>
-
-                
-            </article>
+      <div class="table__box">
+        <section class="header">
+          <article>
+            <input
+              type="text"
+              class="filter"
+              placeholder="Foydalanuvchi kodi bo'yicha"
+              v-model="codeQuery"
+            />
+            <input
+              type="text"
+              class="filter"
+              placeholder="Buyurtma raqami bo'yicha qidirish"
+              v-model="orderQuery"
+            />
+            <button class="filter" @click="sortByNewest = !sortByNewest">
+              {{ sortByNewest ? 'Yangi boshidan' : 'Eski boshidan' }}
+            </button>
+          </article>
         </section>
+  
         <section class="main">
-            <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th class="th" scope="col">#</th>
-                    <th class="th" scope="col">Foydalanuvchi kodi</th>
-                    <th class="th" scope="col">Buyurtma raqami</th>
-                    <th class="th" scope="col">Reyting</th>
-                    <th class="th" scope="col">Yaratilgan sana</th>
-                    <th class="th" scope="col">Xabar</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">1</th>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td><i class="icon bi bi-eye"></i> <i class="icon bi bi-pencil-square"></i> <i class="icon bi bi-trash"></i></td>
-                  </tr>
-                  <tr>
-                    <th scope="row">2</th>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">3</th>
-                    <td>Doe</td>
-                    <td>@social</td>
-                    <td>John</td>
-                    <td>Doe</td>
-                    <td>@social</td>
-                  </tr>
-                </tbody>
-            </table>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th class="th">#</th>
+                <th class="th">Foydalanuvchi kodi</th>
+                <th class="th">Buyurtma raqami</th>
+                <th class="th">Reyting</th>
+                <th class="th">Yaratilgan sana</th>
+                <th class="th">Xabar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(user, index) in paginatedUsers"
+                :key="user.id"
+              >
+                <th scope="row">{{ index + 1 + (currentPage - 1) * pageSize }}</th>
+                <td>{{ user.userCod }}</td>
+                <td>{{ user.buyurtmaraqami }}</td>
+                <td>{{ user.reyting }}</td>
+                <td>{{ user.create }}</td>
+                <td>{{ user.xabar }}</td>
+              </tr>
+            </tbody>
+          </table>
         </section>
-        <section class="footer">
-            <p class="left">Jami foydalanuvchilar: <span>{{ $store.state.count }}</span></p>
-            <button class="right">1 2 </button>
-        </section>
+  
+        <div class="footer">
+          <p class="left">
+            Jami foydalanuvchilar: <span>{{ filteredUsers.length }}</span>
+          </p>
+          <div class="pagination">
+            <button
+              class="filter"
+              v-for="page in totalPages"
+              :key="page"
+              @click="changePage(page)"
+              :class="{ active: currentPage === page }"
+            >
+              {{ page }}
+            </button>
+          </div>
         </div>
+      </div>
     </div>
-</template>
-<script>
-import store from "@/store/index.js";
-export default {
-    
-}
-</script>
-<style scoped>
-.box{
+  </template>
+  
+  <script>
+  import axios from "axios";
+  export default {
+    data() {
+      return {
+        users: [],
+        codeQuery: "",
+        orderQuery: "",
+        currentPage: 1,
+        pageSize: 5,
+        sortByNewest: true,
+      };
+    },
+    computed: {
+      filteredUsers() {
+        return this.users
+          .filter((user) => {
+            const codeMatch = user.userCod?.toLowerCase().includes(this.codeQuery.toLowerCase());
+            const orderMatch = user.buyurtmaraqami?.toLowerCase().includes(this.orderQuery.toLowerCase());
+            return codeMatch && orderMatch;
+          })
+          .sort((a, b) => {
+            const dateA = new Date(a.create);
+            const dateB = new Date(b.create);
+            return this.sortByNewest ? dateB - dateA : dateA - dateB;
+          });
+      },
+      paginatedUsers() {
+        const start = (this.currentPage - 1) * this.pageSize;
+        const end = start + this.pageSize;
+        return this.filteredUsers.slice(start, end);
+      },
+      totalPages() {
+        return Math.ceil(this.filteredUsers.length / this.pageSize);
+      },
+    },
+    methods: {
+      changePage(page) {
+        this.currentPage = page;
+      },
+    },
+    watch: {
+      codeQuery() {
+        this.currentPage = 1;
+      },
+      orderQuery() {
+        this.currentPage = 1;
+      },
+    },
+    mounted() {
+      axios
+        .get("http://localhost:3000/users")
+        .then((res) => {
+          this.users = res.data;
+        })
+        .catch((err) => {
+          console.error("Xatolik:", err);
+        });
+    },
+  };
+  </script>
+  
+  <style scoped>
+  .box {
     padding: 20px;
     height: 100%;
-    display: inline-block;
-    
-}
-.table_box{
+  }
+  .table__box {
     padding: 20px;
     border-radius: 16px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    background-color: #ffff;
+    background-color: #fff;
     width: 100%;
-}
-.header{
+  }
+  .header {
     display: flex;
     justify-content: space-between;
     height: 70px;
     align-items: center;
     width: 100%;
-}
-.header p{
-    font-size: 20px;
-    display: flex;
-    margin-bottom: 0;
-    color:rgb(117, 117, 117);
-}
-.header p span{
-    color: #000;
-    margin-left: 5px;
-}
-.select_btn{
-    background: rgb(247, 247, 247);
-    color:rgb(117, 117, 117);
-}
-article{
+  }
+  article {
     display: flex;
     align-items: center;
-}
-article .filter{
+  }
+  article .filter {
     width: 270px;
     height: 37px;
     border-radius: 10px;
@@ -121,51 +163,45 @@ article .filter{
     background-color: rgb(247, 247, 247);
     font-size: 1rem;
     padding: 0 10px;
-    }
-
-    /* Main */
-    .main{
-        border-radius: 10px;
-        margin-top: 5px;
-    }
-
-
-    td, th{
-        font-size: 18px;
-    }
-    .th{
-        color: rgb(77, 77, 77);
-        background: rgb(247, 247, 247);
-        padding: 15px;
-    }
-    td{
-        font-weight: 400;
-        padding:15px;
-    }
-    .icon{
-        margin-right: 5px;
-        cursor: pointer;
-        color: rgb(77, 77, 77);
-    }
-    .icon:hover{
-        background-color: rgb(230, 230, 230);
-        color:#0d6efd;
-    }
-
-    /* Footer */
-
-    .footer{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .left{
-        font-size: 20px;
-    }
-    .left span{
-        color:#0d6efd;
-    }
-    .right{
-        font-size: 20px;
-    }
-</style>
+  }
+  .main {
+    border-radius: 10px;
+    margin-top: 5px;
+  }
+  th,
+  td {
+    font-size: 18px;
+    padding: 15px;
+  }
+  .th {
+    background: rgb(247, 247, 247);
+    color: rgb(77, 77, 77);
+  }
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+  .left {
+    font-size: 20px;
+  }
+  .left span {
+    color: #0d6efd;
+  }
+  .pagination button {
+    margin-right: 10px;
+    height: 37px;
+    border-radius: 10px;
+    border: none;
+    background-color: rgb(247, 247, 247);
+    font-size: 1rem;
+    padding: 0 12px;
+  }
+  .pagination button.active,
+  .pagination button:hover {
+    background-color: #0d6efd;
+    color: #fff;
+  }
+  </style>
+  

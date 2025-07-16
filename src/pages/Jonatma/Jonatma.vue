@@ -3,8 +3,6 @@
       <div class="table__box">
         <!-- Header section -->
         <section class="header">
-          <h2>Jo'natmalar</h2>
-          <p>Jami jo'natmalar: <span>{{ shipments.length }}</span></p>
           <article>
             <input
               type="text"
