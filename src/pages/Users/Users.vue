@@ -171,15 +171,17 @@ export default {
 <style scoped>
 .box {
   position: relative;
-
+   height: 100%;
   padding: 20px;
   flex-direction: column;
 }
 
 .table__box {
-    border: 1px solid rgb(255, 0, 0);
+  border: 1px solid rgb(255, 255, 255);
   border-radius: 12px;
   padding: 16px;
+  background-color: white;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 .header {
   display: flex;
