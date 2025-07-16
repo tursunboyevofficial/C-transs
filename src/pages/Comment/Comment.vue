@@ -1,6 +1,7 @@
 <template>
     <div class="box">
-        <section class="header">
+        <div class="table_box">
+            <section class="header">
             <article>
                 <input type="text" class="filter" placeholder="Foydalanuvchi kodi bo'yicha ">
                 <input type="filter" class="filter" placeholder="Buyurtma raqami bo'yicha qidirish">
@@ -63,6 +64,7 @@
             <p class="left">Jami foydalanuvchilar: <span>{{ $store.state.count }}</span></p>
             <button class="right">1 2 </button>
         </section>
+        </div>
     </div>
 </template>
 <script>
@@ -73,11 +75,17 @@ export default {
 </script>
 <style scoped>
 .box{
-    box-shadow: 0.4px 0.4px 4px 1px;
-    padding: 40px;
-    flex-direction: column;
-
+    padding: 20px;
+    height: 100%;
+    display: inline-block;
     
+}
+.table_box{
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    background-color: #ffff;
+    width: 100%;
 }
 .header{
     display: flex;

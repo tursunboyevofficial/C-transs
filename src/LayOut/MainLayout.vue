@@ -46,11 +46,11 @@ export default {
     }
     .sidebar{
         transition: 0.5s;
-        width: 23vh;
+        width: 26.5vh;
     }
     .sidebar1{
         transition: 0.5s;
-        width: 9vh;
+        width:10vh;
     }
     .bar_content{
         display: flex;
@@ -61,7 +61,7 @@ export default {
     }
     .navbar{
         
-        height: 50px;
+        height: 55px;
     }
     .content{
         

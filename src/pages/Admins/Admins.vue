@@ -1,6 +1,7 @@
 <template>
     <div class="box">
-        <section class="header">
+        <div class="table_box">
+            <section class="header">
             <h2>Administratorlar</h2>
             <p>Jami foydalanuvchilar:<span>{{ $store.state.count }}</span></p>
                 <button class="btn btn-primary">+ Yangi administratorlar qo'shish</button>
@@ -49,6 +50,7 @@
                 </tbody>
             </table>
         </section>
+        </div>
     </div>
 </template>
 <script>
@@ -59,11 +61,15 @@ export default {
 </script>
 <style scoped>
 .box{
-    box-shadow: 0.4px 0.4px 4px 1px;
-    padding: 40px;
-    flex-direction: column;
-
-    
+    display: inline-block;
+    padding: 20px;   
+    height: 100%;
+}
+.table_box{
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 .header{
     display: flex;

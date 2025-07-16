@@ -1,6 +1,7 @@
 <template >
     <div class="box">
-        <section class="header">
+        <div class="table_box">
+            <section class="header">
             <h1>Мобильные баннеры</h1>
             <p>Макс. 3 изображения. Рекомендуемый размер: 320x180 px</p>
             <div class="img_section">
@@ -8,6 +9,7 @@
                 <img src="@/assets/logo.svg" class="img" alt="img">
             </div>
         </section>
+        </div>
     </div>
 </template>
 <script>
@@ -17,10 +19,15 @@ export default {
 </script>
 <style scoped>
     .box{
-    box-shadow: 0.4px 0.4px 4px 1px;
-    padding: 40px;
-    height: 60%;
+    padding: 20px;
+    display: inline-block;
     
+}
+.table_box{
+    background-color: #ffff;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 16px;
 }
 .header{
     display: flex;
@@ -39,7 +46,7 @@ export default {
 }
 .img{
     width: 49%;
-    height: 100%;
+    height: 450px;
     border-radius: 20px;
     cursor:pointer;
     border: 1px solid;

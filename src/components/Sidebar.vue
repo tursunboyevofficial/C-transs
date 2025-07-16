@@ -4,17 +4,17 @@
         <div class="box_top">
             <img src="../assets/logo.svg"  alt="C-trans logo"  :class="{'img_logo':~this.collapsed,'img_logo2':this.collapsed}" >
             <router-link to="/lids" class="link" ><button class="btn btn-outline-primary"><i class=" icons bi bi-file-text"></i> <span v-if="!this.collapsed">Lidlar</span></button></router-link>
-            <router-link to="/buyurtmalar" class="link"><button class="btn taf btn-outline-primary"><i class="icons  bi bi-cart3"></i><span class="ktb" v-if="!this.collapsed">Kutilayotgan buyumlar</span></button></router-link>
+            <router-link to="/buyurtmalar" class="link"><button class="btn btn-outline-primary"><i class="icons  bi bi-cart3"></i><span  v-if="!this.collapsed">Kutilayotgan buyumlar</span></button></router-link>
             <router-link to="/jonatma" class="link"><button class="btn btn-outline-primary"><i class="icons bi bi-truck"></i><span v-if="!this.collapsed">Jo'natmalar</span> </button></router-link>
             <router-link to="/users" class="link"><button class="btn btn-outline-primary"><i class="icons bi bi-person"></i> <span v-if="!this.collapsed"> Foydalanuvchilar</span></button></router-link>
             <router-link to="/comment" class="link"><button class="btn btn-outline-primary"><i class="icons bi bi-chat-left"></i> <span v-if="!this.collapsed">Sharhlar</span> </button></router-link>
             <div class="btn-group" role="group">
-    <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+    <button type="button" class="btn btn-primary " data-bs-toggle="dropdown" aria-expanded="false">
         <i class="icons bi bi-gear"></i> <span v-if="!this.collapsed">Sozlamalar</span> 
     </button>
     <ul class="dropdown-menu">
-      <router-link to="/admins" class="link btn"><li class=" bi  bi-person-gear "> Adminlar</li></router-link>
-      <router-link to="/banner" class="link btn"><li class=" bi bi-phone">Mobil Banner</li></router-link>
+      <router-link to="/admins" class="link btn"><button class="btn btn-outline-primary"><i class=" bi  bi-person-gear "></i> <span v-if="!this.collapsed">Adminlar</span> </button></router-link>
+      <router-link to="/banner" class="link btn"><button class="btn btn-outline-primary"><i class=" bi  bi-phone"></i> <span v-if="!this.collapsed">Mobil Banner</span> </button></router-link>
     </ul>
   </div>
 </div>
@@ -120,17 +120,25 @@ export default {
 .icons{
     color: rgb(117, 117, 117);
     font-size: 25px;
-    margin-right: 10px;
+    /* margin-right: 10px; */
 }
-.btn p{
-    margin-left: -6px;
-    margin-bottom: 0;
-    width: 100px;
-    
+button span {
+    margin-left: 10px;
+    text-align: start;
+} 
+button{
+padding: 0;
+}
+a{
+    padding: 0;
+}
+button i{
+    width: 2vh;
+    font-size: 20px !important;
 }
 .btn_size{
-    top: -34px;
-    right: -9px;
+    top: -85px;
+    right: -2px;
     position: absolute;
     display: flex;
     justify-content: end;
@@ -169,10 +177,7 @@ span{
     display: flex;
     justify-content: start;
 }
-.ktb{
-    margin-left: -26px;
-    /* width: 140px; */
-}
+
 .exit_button{
     width: 2vh;
     font-size: 20px !important;

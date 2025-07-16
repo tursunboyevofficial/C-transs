@@ -4,13 +4,14 @@
       <section class="header">
         <h2>Foydalanuvchilar</h2>
         <p>
-          Jami foydalanuvchilar:<span>{{ $store.state.count }}</span>
+          Jami foydalanuvchilar: <span>{{ $store.state.count }}</span>
         </p>
         <article>
           <input
-            type="filter"
+            type="text"
             class="filter"
             placeholder="To'liq ismi bo'yicha qidirish"
+            v-model="searchQuery"
           />
           <input
             type="text"
@@ -22,6 +23,7 @@
           </button>
         </article>
       </section>
+
       <section class="main">
         <table class="table table-hover">
           <thead>
@@ -35,9 +37,9 @@
               <th class="th" scope="col">Amallar</th>
             </tr>
           </thead>
-          <tbody v-for="user in this.users" :key="user.id">
+          <tbody v-for="(user, index) in filteredUsers" :key="user.id">
             <tr>
-              <th scope="row">1</th>
+              <th scope="row">{{ index + 1 }}</th>
               <td>{{ user.name }}</td>
               <td>{{ user.tel }}</td>
               <td>{{ user.email }}</td>
@@ -52,6 +54,7 @@
           </tbody>
         </table>
       </section>
+
       <div class="footer">
         <p class="left">
           Jami foydalanuvchilar: <span>{{ $store.state.count }}</span>
@@ -59,6 +62,7 @@
         <button class="right">1 2</button>
       </div>
     </div>
+
     <div
       class="modal"
       :class="{ modal_none: modal }"
@@ -102,22 +106,24 @@
           v-model="this.newUser.newPhone"
           id="1"
         />
-        <button type="submit" @click="toggleModal()">Yaratish</button>
+        <button type="submit" @click="addUser()">Yaratish</button>
       </div>
     </div>
   </div>
 </template>
+
 <script>
 import IMask from "imask";
 import store from "@/store/index.js";
 import axios from "axios";
+
 export default {
   data() {
     return {
-      users: {},
+      users: [],
       modal: true,
       isActive: false,
-      userPush: "",
+      searchQuery: "", // 🔍 для поиска
       newUser: {
         newCode: "",
         newName: "",
@@ -133,30 +139,59 @@ export default {
         this.users = res.data;
       })
       .catch((err) => {
-        console.log("xatp", err);
+        console.log("xato", err);
       });
+
     const element = this.$refs.userPush;
-    IMask(element, {
-      mask: "CT-00000",
-    });
+    if (element) {
+      IMask(element, {
+        mask: "CT-00000",
+      });
+    }
+
     const res = this.$refs.newPhone;
-    IMask(res, {
-      mask: "+998 (90) 000 00 00",
-    });
+    if (res) {
+      IMask(res, {
+        mask: "+998 (00) 000-00-00",
+      });
+    }
+  },
+  computed: {
+    filteredUsers() {
+      if (!this.searchQuery) return this.users;
+      return this.users.filter((user) =>
+        user.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    },
   },
   methods: {
-    // test(){
-    //     console.log(this.isActive);
-    // },
     toggleModal() {
       this.modal = !this.modal;
-      if (this.modal) {
-        // this.newUser.newCode+' new Code',
-        // this.newUser.newEmail+' new Email',
-        // this.newUser.newPhone+' new Phone',
-        // this.newUser.newName+' new Name',
-        console.log(this.newUser, this.modal);
-      }
+    },
+    addUser() {
+      const newUser = {
+        id: Date.now(),
+        name: this.newUser.newName,
+        tel: this.newUser.newPhone,
+        email: this.newUser.newEmail,
+        userCod: this.newUser.newCode,
+        create: new Date().toISOString().split("T")[0], // yyyy-mm-dd
+      };
+
+      this.users.push(newUser); // qo‘shish
+      this.$store.state.count = this.users.length; // agar Vuex bor bo‘lsa
+
+      // inputlarni tozalash
+      this.newUser = {
+        newCode: "",
+        newName: "",
+        newEmail: "",
+        newPhone: "",
+      };
+      this.isActive = false;
+
+      // modalni yopish
+      this.toggleModal();
     },
   },
   watch: {
@@ -168,10 +203,11 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .box {
   position: relative;
-   height: 100%;
+  height: 100%;
   padding: 20px;
   flex-direction: column;
 }
@@ -261,19 +297,18 @@ td {
 }
 /* MODAL */
 .modal {
-  transition: 0.3s;
   display: flex;
   justify-content: end;
   left: 0;
-  width: 199vh;
+  width: 100%;
   background-color: rgba(15, 15, 15, 0.836);
 }
 .modal_nav {
-  left: 70%;
+  left: 400px;
   background: rgb(255, 255, 255);
   padding: 25px;
   justify-content: center;
-  width: 32%;
+  width: 33%;
 }
 .modal_nav h1 {
   font-size: 30px;
