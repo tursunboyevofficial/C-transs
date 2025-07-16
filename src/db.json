@@ -1,0 +1,84 @@
+{
+    "users": [
+        {
+            "id":1,
+            "name":"Nodir",
+            "email":"nodir@gmail.com",
+            "tel":"+998901234567",
+            "userCod":1,
+            "create":"01-01-2025",
+            "holati":["Kutilmoqda","Yarim keldi","To'liq keldi","Yuborildi","Xitoydan chiqqan","O'zbekistonga kirgan","Toshkent ommbori","Bochxona Rasmiylashtiruvi","Yetkazib berilgan"],
+            "amal":{
+                "koz":true,
+                "edit":true,
+                "delet":true,
+                "dowloand":true
+            },
+            "jonatmaRaqami":1234,
+            "buyurtmaraqami":4321,
+            "umumiyMiqdor":12,
+            "reyting":3,
+            "xabar":"Keldi Rahmat"
+        },
+        {
+            "id":2,
+            "name":"Nqodir",
+            "email":"qodir@gmail.com",
+            "tel":"+998901234567",
+            "userCod":2,
+            "create":"01-01-2025",
+            "holati":["Kutilmoqda","Yarim keldi","To'liq keldi","Yuborildi","Xitoydan chiqqan","O'zbekistonga kirgan","Toshkent ommbori","Bochxona Rasmiylashtiruvi","Yetkazib berilgan"],
+            "amal":{
+                "koz":true,
+                "edit":true,
+                "delet":true,
+                "dowloand":true
+            },
+            "jonatmaRaqami":1234,
+            "buyurtmaraqami":4321,
+            "umumiyMiqdor":12,
+            "reyting":3,
+            "xabar":"Keldi Rahmat"
+        },
+        {
+            "id":3,
+            "name":"Johon",
+            "email":"johon@gmail.com",
+            "tel":"+998901234567",
+            "userCod":3,
+            "create":"01-01-2025",
+            "holati":["Kutilmoqda","Yarim keldi","To'liq keldi","Yuborildi","Xitoydan chiqqan","O'zbekistonga kirgan","Toshkent ommbori","Bochxona Rasmiylashtiruvi","Yetkazib berilgan"],
+            "amal":{
+                "koz":true,
+                "edit":true,
+                "delet":true,
+                "dowloand":true
+            },
+            "jonatmaRaqami":1234,
+            "buyurtmaraqami":4321,
+            "umumiyMiqdor":12,
+            "reyting":3,
+            "xabar":"Keldi Rahmat"
+        },
+        {
+            "id":4,
+            "name":"Vali",
+            "email":"vali@gmail.com",
+            "tel":"+998901234567",
+            "userCod":4,
+            "create":"01-01-2025",
+            "holati":["Kutilmoqda","Yarim keldi","To'liq keldi","Yuborildi","Xitoydan chiqqan","O'zbekistonga kirgan","Toshkent ommbori","Bochxona Rasmiylashtiruvi","Yetkazib berilgan"],
+            "amal":{
+                "koz":true,
+                "edit":true,
+                "delet":true,
+                "dowloand":true
+            },
+            "jonatmaRaqami":1234,
+            "buyurtmaraqami":4321,
+            "umumiyMiqdor":12,
+            "reyting":3,
+            "xabar":"Keldi Rahmat"
+        }
+    ]
+}

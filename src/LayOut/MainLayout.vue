@@ -1,7 +1,7 @@
 <template >
     <div class="box">
         <div class="bar">
-            <Sidebar :class="{'sidebar1':$store.state.isCollapsed,'sidebar':$store.state.isCollapsed}"/>
+            <Sidebar :class="{'sidebar1':$store.state.isCollapsed,'sidebar':!$store.state.isCollapsed}"/>
         </div>
         <div class="bar_content">
             <Navbar class="navbar"/>
@@ -30,35 +30,42 @@ export default {
 }
 </script>
 <style scoped>
-    .box{
+
+
+
+
+.box{
         display: flex;
         width: 100%;
-        height: 100vh;
-        /* margin: 0 10px; ; */
+        
+        overflow: hidden;
+        
     }
     .bar{
         display: flex;
     }
     .sidebar{
-        width: 11vh;
+        transition: 0.5s;
+        width: 23vh;
     }
     .sidebar1{
-        width: 14vh;
+        transition: 0.5s;
+        width: 9vh;
     }
     .bar_content{
         display: flex;
         flex-direction: column;
         width: 100%;
-        height: 100vh;
+      
+       
     }
     .navbar{
         
-        height: 11%;
+        height: 50px;
     }
     .content{
-        height: 100vh;
-        margin: 20px;
-        border: 1px solid rgb(214, 214, 214);
-        padding: 10px 20px;
+        
+     
+        
     }
 </style>

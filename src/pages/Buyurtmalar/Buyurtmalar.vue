@@ -1,6 +1,8 @@
 <template >
-    <div>
-        <h1>Buyurtmalar</h1>
+    <div class="box">
+        <section class="header">
+
+        </section>
         <router-link to="/buyurtmaEdit" > buyurtma edit</router-link>
     </div>
 </template>
@@ -10,5 +12,17 @@ export default {
 }
 </script>
 <style scoped>
+    .box{
+    box-shadow: 0.4px 0.4px 4px 1px;
+    padding: 40px;
     
+}
+.header{
+    display: flex;
+    justify-content: space-between;
+    height: 70px;
+    align-items: center;
+    width: 100%;
+    background-color: antiquewhite;
+}
 </style>

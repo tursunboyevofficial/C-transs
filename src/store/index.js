@@ -3,7 +3,7 @@ import { createStore} from 'vuex'
 const store = createStore({
     state(){
         return {
-            isCollapsed:false,
+            isCollapsed:true,
             count:0,
             user:null
         }
