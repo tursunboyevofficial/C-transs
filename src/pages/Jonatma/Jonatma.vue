@@ -11,7 +11,7 @@
               v-model="searchQuery"
             />
             <div class="btn-group">
-              <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+              <button class="btn  dropdown-toggle" data-bs-toggle="dropdown">
                 Barcha holatlar
               </button>
               <ul class="dropdown-menu">
@@ -21,7 +21,7 @@
               </ul>
             </div>
             <div class="btn-group">
-              <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+              <button class="btn  dropdown-toggle" data-bs-toggle="dropdown">
                 Omborlar
               </button>
               <ul class="dropdown-menu">
@@ -31,7 +31,7 @@
               </ul>
             </div>
             <div class="btn-group">
-              <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+              <button class="btn  dropdown-toggle" data-bs-toggle="dropdown">
                 Saralash
               </button>
               <ul class="dropdown-menu">
@@ -39,7 +39,7 @@
                 <li><a class="dropdown-item">Eski boshidan</a></li>
               </ul>
             </div>
-            <button class="btn btn-primary" @click="toggleModal()">
+            <button class="btn " @click="toggleModal()">
               + Jo'natma qo'shish
             </button>
           </article>
@@ -214,6 +214,7 @@
   
   .btn {
     margin-right: 10px;
+    background-color: rgb(247, 247, 247);
   }
   
   .main {

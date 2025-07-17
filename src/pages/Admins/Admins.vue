@@ -4,7 +4,7 @@
         <section class="header">
           <h2>Administratorlar</h2>
           <p>Jami foydalanuvchilar:<span>{{ users.length }}</span></p>
-          <button class="btn btn-primary" @click="openModal(null, 'create')">+ Yangi administratorlar qo'shish</button>
+          <button class="btn " @click="openModal(null, 'create')">+ Yangi administratorlar qo'shish</button>
         </section>
   
         <section class="main">
@@ -126,6 +126,9 @@
   </script>
   
   <style scoped>
+  .btn{
+    background-color: rgb(247, 247, 247);
+  }
   .box {
     display: inline-block;
     padding: 20px;

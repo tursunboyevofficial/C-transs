@@ -1,157 +1,311 @@
 <template>
-    <div class="box">
-      <div class="table_box">
-        <section class="header">
-          <div class="right">
-            <input
-              type="text"
-              v-model="search"
-              class="filter"
-              placeholder="Foydalanuvchi kodi bo'yicha"
-            />
-  
-            <button class="btn btn-primary" @click="exportExcel">
-              Excelga export qilish
-            </button>
-            <button class="btn btn-primary" @click="openAddModal">
-              Lid qo'shish
-            </button>
-          </div>
-        </section>
-  
-        <section class="main">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th class="th">#</th>
-                <th class="th">To‘liq ismi</th>
-                <th class="th">Telefon</th>
-                <th class="th">Elektron pochta</th>
-                <th class="th">Foydalanuvchi kodi</th>
-                <th class="th">Yaratilgan sana</th>
-                <th class="th">Amallar</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(user, index) in filteredUsers"
-                :key="user.id"
-              >
-                <th scope="row">{{ index + 1 }}</th>
-                <td>{{ user.name }}</td>
-                <td>{{ user.tel }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.userCod }}</td>
-                <td>{{ user.create }}</td>
-                <td>
-                  <i class="icon bi bi-eye" @click="viewUser(user)"></i>
-                  <i class="icon bi bi-pencil-square" @click="openEditModal(user)"></i>
-                  <i class="icon bi bi-trash" @click="deleteUser(user)"></i>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
-  
-        <section class="footer">
-          <p class="left">
-            Jami foydalanuvchilar: <span>{{ users.length }}</span>
-          </p>
-        </section>
-      </div>
-  
-      <!-- Add/Edit Modal -->
-      <div class="modal" :class="{ modal_none: !modalVisible }" @click.self="closeModal">
-        <div class="modal_nav">
-          <h1>{{ editMode ? 'Foydalanuvchini tahrirlash' : "Yangi lead qo'shish" }}</h1>
-  
-          <input v-model="modalUser.userCod" placeholder="Foydalanuvchi kodi" />
-          <input v-model="modalUser.name" placeholder="To'liq ismi" />
-          <input v-model="modalUser.email" placeholder="Elektron pochta" />
-          <input v-model="modalUser.tel" placeholder="Telefon raqam" />
-  
-          <button @click="saveUser">{{ editMode ? 'Saqlash' : 'Qo‘shish' }}</button>
+  <div class="box">
+    <div class="table_box">
+      <section class="header">
+        <div class="left">
+          <input
+            type="text"
+            v-model="search"
+            class="filter"
+            placeholder="Foydalanuvchi kodi bo'yicha"
+          />
+          <select  class="form-select m-2 ">
+            <option disabled value="">Barcha omborlar</option>
+            <option>Bog'lanilmagan</option>
+            <option>Bog'lanilgan</option>
+          </select>
+
+          <select  class="form-select m-2  ">
+            <option disabled value="">Barcha omborlar</option>
+            <option>Yiwu</option>
+            <option>Foshan</option>
+            <option>Qashqar</option>
+            <option>Hargos</option>
+          </select>
+          <select  class="form-select m-2  ">
+          <option disabled value="">Yangi boshida</option>
+          <option>Yangi boshida</option>
+          <option>Eski boshida</option>
+          <option>Qashqar</option>
+          <option>Hargos</option>
+        </select>
         </div>
+        <div class="right">
+          
+          <button class="btn " @click="exportExcel">
+            Excelga export qilish
+          </button>
+          <button class="btn " @click="openAddModal">
+            Lid qo'shish
+          </button>
+        </div>
+      </section>
+
+      <section class="main">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th class="th">#</th>
+              <th class="th">To‘liq ismi</th>
+              <th class="th">Telefon</th>
+              <th class="th">Elektron pochta</th>
+              <th class="th">Foydalanuvchi kodi</th>
+              <th class="th">Yaratilgan sana</th>
+              <th class="th">Amallar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(user, index) in filteredUsers"
+              :key="user.id"
+            >
+              <th scope="row">{{ index + 1 }}</th>
+              <td>{{ user.name }}</td>
+              <td>{{ user.tel }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.userCod }}</td>
+              <td>{{ user.create }}</td>
+              <td>
+                <i class="icon bi bi-eye" @click="viewUser(user)"></i>
+                <i class="icon bi bi-pencil-square" @click="openEditModal(user.userCod)"></i>
+                <i class="icon bi bi-trash" @click="deleteUser(user)"></i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="footer">
+        <p class="left">
+          Jami foydalanuvchilar: <span>{{ users.length }}</span>
+        </p>
+      </section>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" :class="{ modal_none: !modalVisible }" @click.self="closeModal">
+      <div class="modal_nav left_modal">
+        <h1>{{ editMode ? 'Foydalanuvchini tahrirlash' : "Lid qo‘shish" }}</h1>
+
+        <p>Foydalanuvchi kodi</p>
+        <input v-model="modalUser.userCod" placeholder="CT-" />
+
+        <p>Telefon</p>
+        <input v-model="modalUser.tel" placeholder="Telefon raqam" />
+
+        <p>Elektron pochta</p>
+        <input v-model="modalUser.email" placeholder="Email" />
+
+        <p>Nomi (Uz)</p>
+        <input v-model="modalUser.nameUz" placeholder="Nomi (Uz)" />
+
+        <p>Nomi (Ru)</p>
+        <input v-model="modalUser.nameRu" placeholder="Nomi (Ru)" />
+
+        <p>Nomi (Zh)</p>
+        <input v-model="modalUser.nameZh" placeholder="Nomi (Zh)" />
+
+        <p>Vazn (kg)</p>
+        <input v-model="modalUser.weight" type="number" step="0.01" placeholder="Vazn (kg)" />
+
+        <p>m3</p>
+        <input v-model="modalUser.m3" type="number" step="0.001" placeholder="m3" />
+
+        <p>O'rtacha og'irlik (kg/m³)</p>
+        <input v-model="modalUser.density" type="number" step="0.01" placeholder="kg/m³" />
+
+        <p>Narx</p>
+        <input v-model="modalUser.price" type="number" step="0.01" placeholder="Narx" />
+
+        <p>Sklad</p>
+        <input v-model="modalUser.warehouse" placeholder="Sklad" />
+        <p>Holat</p>
+        <select v-model="modalUser.status" class="form-select mt-2 mb-3">
+          <option>Bog‘lanilmagan</option>
+          <option>Bog‘lanilgan</option>
+        </select>
+
+
+
+        <p>Skladni tanlash</p>
+        <select v-model="modalUser.warehouse" class="form-select mt-2 mb-3">
+          <option disabled value="">Skladni tanlang</option>
+          <option>Yiwu</option>
+          <option>Foshan</option>
+          <option>Qashqar</option>
+          <option>Hargos</option>
+        </select>
+
+        
+
+        <button @click="saveUser">{{ editMode ? 'Saqlash' : 'Yaratish' }}</button>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import * as XLSX from "xlsx";
-  export default {
-    data() {
-      return {
-        search: '',
-        users: [
-          {id:1, userCod:"CT-00001", name:"Botirjon", email:"a@a.com", tel:"+998901234567", create:"2025-07-01"},
-          {id:2, userCod:"CT-00002", name:"Alisher",  email:"b@b.com", tel:"+998911234567", create:"2025-06-29"},
-        ],
-        modalVisible: false,
-        editMode: false,
-        modalUser: {},
-      };
-    },
-    computed: {
-      filteredUsers() {
-        if (!this.search) return this.users;
-        return this.users.filter(u =>
-          u.userCod.toLowerCase().includes(this.search.toLowerCase())
-        );
+  </div>
+</template>
+<script>
+import * as XLSX from "xlsx";
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      search: '',
+      modalVisible: false,
+      editMode: false,
+      users: [],
+      modalUser: {
+        userCod: '',
+        name: '',
+        tel: '',
+        email: '',
+        nameUz: '',
+        nameRu: '',
+        nameZh: '',
+        weight: '',
+        m3: '',
+        density: '',
+        price: '',
+        warehouse: '',
+        status: 'Bog‘lanilmagan'
       }
-    },
-    methods: {
-      exportExcel() {
-        const ws = XLSX.utils.json_to_sheet(this.users);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Users");
-        XLSX.writeFile(wb, "users.xlsx");
-      },
-      openAddModal() {
-        this.editMode = false;
-        this.modalUser = {userCod: '', name:'', email:'', tel:''};
-        this.modalVisible = true;
-      },
-      openEditModal(user) {
-        this.editMode = true;
-        this.modalUser = {...user};
-        this.modalVisible = true;
-      },
-      viewUser(user) {
-        alert(`
-          Kod: ${user.userCod}
-          Ismi: ${user.name}
-          Email: ${user.email}
-          Tel: ${user.tel}
-        `);
-      },
-      deleteUser(user) {
-        if (confirm("Rostan ham o‘chirmoqchimisiz?")) {
-          this.users = this.users.filter(u => u.id !== user.id);
-        }
-      },
-      saveUser() {
-        if (!this.modalUser.userCod || !this.modalUser.name) {
-          return alert("Kerakli maydonlarni to‘ldiring");
-        }
-        if (this.editMode) {
-          const idx = this.users.findIndex(u=>u.id===this.modalUser.id);
-          this.$set(this.users, idx, {...this.modalUser});
-        } else {
-          this.users.push({
-            ...this.modalUser,
-            id: Date.now(), create: new Date().toISOString().split("T")[0]
-          });
-        }
-        this.closeModal();
-      },
-      closeModal() {
-        this.modalVisible = false;
-      }
+    };
+  },
+  computed: {
+    filteredUsers() {
+      return this.users.filter(user =>
+        user.userCod.toLowerCase().includes(this.search.toLowerCase())
+      );
     }
-  };
-  </script>
-  
-  <style scoped>
+  },
+  methods: {
+    openAddModal() {
+      this.editMode = false;
+      this.modalUser = {
+        userCod: '',
+        name: '',
+        tel: '',
+        email: '',
+        nameUz: '',
+        nameRu: '',
+        nameZh: '',
+        weight: '',
+        m3: '',
+        density: '',
+        price: '',
+        warehouse: '',
+        status: 'Bog‘lanilmagan'
+      };
+      this.modalVisible = true;
+    },
+    openEditModal(id) {
+      this.$router.push(`/lidEdit?id=${id}`)
+      console.log(id,'edit');
+    },
+    closeModal() {
+      this.modalVisible = false;
+    },
+    saveUser() {
+      if (!this.modalUser.userCod || !this.modalUser.nameUz) {
+        alert("Foydalanuvchi kodi va ismi (UZ) majburiy.");
+        return;
+      }
+
+      this.modalUser.name = this.modalUser.nameUz;
+
+      if (this.editMode) {
+        const index = this.users.findIndex(u => u.id === this.modalUser.id);
+        if (index !== -1) {
+          this.$set(this.users, index, { ...this.modalUser });
+        }
+      } else {
+        this.users.push({
+          ...this.modalUser,
+          id: Date.now(),
+          create: new Date().toISOString().split("T")[0],
+        });
+      }
+      this.closeModal();
+    },
+    deleteUser(user) {
+      if (confirm("Rostdan ham o‘chirmoqchimisiz?")) {
+        this.users = this.users.filter(u => u.id !== user.id);
+      }
+    },
+    viewUser(user) {
+      alert(`Ismi: ${user.name}\nTel: ${user.tel}\nEmail: ${user.email}`);
+    },
+    exportExcel() {
+      const ws = XLSX.utils.json_to_sheet(this.users);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Foydalanuvchilar");
+      XLSX.writeFile(wb, "users.xlsx");
+    }
+  },
+  mounted(){
+    axios.get('http://localhost:3000/users')
+      .then((res)=>{
+        this.users = res.data
+        // console.log(...this.users);
+      })
+      .catch((err)=>{
+        console.log(err,'error');
+      })
+  }
+};
+</script>
+
+
+
+<style scoped>
+.btn-group{
+  margin-bottom: 20px;
+}
+.modal_nav .btns1{
+  /* width: 100%; */
+  background-color: rgb(247, 247, 247);
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  align-items: center;
+}
+.modal_nav .btns1:hover{
+  background-color: rgb(247, 247, 247);
+  color: #9e9e9e;
+}
+.dropdown-menu{
+  width: 100%;
+  border-radius: 10px;
+}
+.dropdown-item:hover{
+  background-color: #1875ff;
+}
+
+.left_modal {
+  left: 0;
+  right: auto;
+  animation: slideInLeft 0.3s ease;
+}
+.modal_nav input{
+  border-radius: 10px;
+  width: 640px;
+  height: 45px;
+  margin-bottom: 10px;
+  background-color: rgb(247, 247, 247);
+  border: none;
+  padding: 5px 20px;
+  font-size: 15px;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
   .box{
     padding: 20px;
     height: 100%;
@@ -197,6 +351,7 @@ article{
     }
     .btn{
         margin-right: 10px;
+        background: rgb(247, 247, 247);
     }
     input{
         outline: none;
@@ -243,6 +398,8 @@ input:focus{
     }
     .left{
         font-size: 20px;
+        display: flex;
+        align-items: center;
     }
     .left span{
         color:#0d6efd;
@@ -264,8 +421,8 @@ input:focus{
 }
 
 .modal_nav {
-  width: 25%; /* o'ng tomondan 1/4 ekran */
-  height: 100%;
+  width: 37%; /* o'ng tomondan 1/4 ekran */
+  height: 120%;
   background-color: #fff;
   padding: 30px 25px;
   display: flex;
@@ -387,7 +544,12 @@ input:focus{
     transform: translateX(0%);
   }
 }
-
+.select_btn{
+  margin-bottom: 0;
+}
+.form-select{
+  background-color: rgb(247, 247, 247);
+}
 
   </style>
   

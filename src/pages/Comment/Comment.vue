@@ -134,15 +134,17 @@
   <style scoped>
   .box {
     padding: 20px;
+    flex-direction: column;
+    /* background-color: #fff; */
     height: 100%;
   }
   .table__box {
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
-    width: 100%;
-  }
+  border: 1px solid rgb(255, 255, 255);
+  border-radius: 12px;
+  padding: 16px;
+  background-color: white;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
   .header {
     display: flex;
     justify-content: space-between;
