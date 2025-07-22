@@ -9,35 +9,29 @@
             class="filter"
             placeholder="Foydalanuvchi kodi bo'yicha"
           />
-          <select  class="form-select m-2 ">
-            <option disabled value="">Barcha omborlar</option>
-            <option>Bog'lanilmagan</option>
-            <option>Bog'lanilgan</option>
+          <select v-model="statusFilter" class="form-select m-2">
+            <option  value="">Barcha holatlar</option>
+            <option>Bog'lanilmadi</option>
+            <option>Bog'lanildi</option>
           </select>
 
-          <select  class="form-select m-2  ">
-            <option disabled value="">Barcha omborlar</option>
+          <select v-model="warehouseFilter" class="form-select m-2">
+            <option  value="">Barcha omborlar</option>
             <option>Yiwu</option>
             <option>Foshan</option>
             <option>Qashqar</option>
             <option>Hargos</option>
           </select>
-          <select  class="form-select m-2  ">
-          <option disabled value="">Yangi boshida</option>
-          <option>Yangi boshida</option>
-          <option>Eski boshida</option>
-          <option>Qashqar</option>
-          <option>Hargos</option>
-        </select>
+
+          <select v-model="orderFilter" @change="orderFilter1" class="form-select m-2">
+            <option  value="">Yangi boshida</option>
+            <option>Yangi boshidan</option>
+            <option>Eski boshidan</option>
+          </select>
         </div>
         <div class="right">
-          
-          <button class="btn " @click="exportExcel">
-            Excelga export qilish
-          </button>
-          <button class="btn " @click="openAddModal">
-            Lid qo'shish
-          </button>
+          <button class="btn" @click="exportExcel">Excelga export qilish</button>
+          <button class="btn" @click="openAddModal">Lid qo'shish</button>
         </div>
       </section>
 
@@ -46,28 +40,25 @@
           <thead>
             <tr>
               <th class="th">#</th>
-              <th class="th">To‘liq ismi</th>
               <th class="th">Telefon</th>
               <th class="th">Elektron pochta</th>
               <th class="th">Foydalanuvchi kodi</th>
               <th class="th">Yaratilgan sana</th>
+              <th class="th">Holati</th>
               <th class="th">Amallar</th>
             </tr>
           </thead>
           <tbody>
-            <tr
-              v-for="(user, index) in filteredUsers"
-              :key="user.id"
-            >
+            <tr v-for="(user, index) in filteredUsers" :key="user.id">
               <th scope="row">{{ index + 1 }}</th>
-              <td>{{ user.name }}</td>
-              <td>{{ user.tel }}</td>
-              <td>{{ user.email }}</td>
-              <td>{{ user.userCod }}</td>
-              <td>{{ user.create }}</td>
+              <td>{{ user.phone_number }}</td>
+              <td>{{ user.gmail }}</td>
+              <td>{{ user.user_ucode }}</td>
+              <td>{{ user.createdAt }}</td>
+              <td>{{ user.status.translations.uz }}</td>
               <td>
                 <i class="icon bi bi-eye" @click="viewUser(user)"></i>
-                <i class="icon bi bi-pencil-square" @click="openEditModal(user.userCod)"></i>
+                <i class="icon bi bi-pencil-square" @click="openEditModal(user.user_ucode)"></i>
                 <i class="icon bi bi-trash" @click="deleteUser(user)"></i>
               </td>
             </tr>
@@ -77,7 +68,7 @@
 
       <section class="footer">
         <p class="left">
-          Jami foydalanuvchilar: <span>{{ users.length }}</span>
+          Jami foydalanuvchilar: <span>{{ filteredUsers.length }}</span>
         </p>
       </section>
     </div>
@@ -118,16 +109,6 @@
         <input v-model="modalUser.price" type="number" step="0.01" placeholder="Narx" />
 
         <p>Sklad</p>
-        <input v-model="modalUser.warehouse" placeholder="Sklad" />
-        <p>Holat</p>
-        <select v-model="modalUser.status" class="form-select mt-2 mb-3">
-          <option>Bog‘lanilmagan</option>
-          <option>Bog‘lanilgan</option>
-        </select>
-
-
-
-        <p>Skladni tanlash</p>
         <select v-model="modalUser.warehouse" class="form-select mt-2 mb-3">
           <option disabled value="">Skladni tanlang</option>
           <option>Yiwu</option>
@@ -136,21 +117,31 @@
           <option>Hargos</option>
         </select>
 
-        
+        <p>Holat</p>
+        <select v-model="modalUser.status" class="form-select mt-2 mb-3">
+          <option>Bog‘lanilmagan</option>
+          <option>Bog‘lanilgan</option>
+        </select>
 
-        <button @click="saveUser">{{ editMode ? 'Saqlash' : 'Yaratish' }}</button>
+        <button @click="addLid">{{ editMode ? 'Saqlash' : 'Yaratish' }}</button>
       </div>
     </div>
   </div>
 </template>
+
 <script>
 import * as XLSX from "xlsx";
 import axios from "axios";
+import store from "@/store";
 
 export default {
   data() {
     return {
       search: '',
+      statusFilter: '',
+      warehouseFilter: '',
+      orderFilter2: "new",
+      orderFilter:'',
       modalVisible: false,
       editMode: false,
       users: [],
@@ -173,12 +164,78 @@ export default {
   },
   computed: {
     filteredUsers() {
-      return this.users.filter(user =>
-        user.userCod.toLowerCase().includes(this.search.toLowerCase())
-      );
+      let result = this.users.filter(user => {
+        const searchMatch = user.user_ucode?.toLowerCase().includes(this.search.toLowerCase());
+        const statusMatch = this.statusFilter ? user.status.code === this.statusFilter : true;
+        const warehouseMatch = this.warehouseFilter ? user.wharehouseUz === this.warehouseFilter : true;
+        return searchMatch && statusMatch && warehouseMatch;
+      });
+
+      if (this.orderFilter === 'Yangi boshida') {
+        result.sort((a, b) => b.id - a.id);
+      } else if (this.orderFilter === 'Eski boshida') {
+        result.sort((a, b) => a.id - b.id);
+      }
+
+      return result;
     }
   },
   methods: {
+    async getUsers() {
+  try {
+    const token = localStorage.getItem('token');
+    
+    const params = {
+      page: 1,
+      limit: 10,
+      status: this.statusFilter || undefined,
+      wharehouse: this.warehouseFilter || undefined,
+      user_ucode: this.search || undefined,
+      sort: this.orderFilter === 'Yangi boshidan' ? 'new' : this.orderFilter === 'Eski boshidan' ? 'old' : undefined
+    };
+
+    const res = await axios.get('http://89.169.2.238:8002/api/v1/leads', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      params
+    });
+
+    this.users = res.data.data;
+  } catch (error) {
+    console.error('APIdan foydalanuvchilarni olishda xatolik:', error);
+  }
+},
+      async addLid(){
+        try{
+          const token = localStorage.getItem('token');
+
+          const res = await axios.post('http://89.169.2.238:8002/api/v1/leads',{
+            user_ucode:this.modalUser.userCod,
+            phone_number:this.modalUser.tel,
+            gmail:this.modalUser.email,
+            weight:this.modalUser.weight,
+            m3:this.modalUser.m3,
+            // average_weight_kg:this.modalUser.userCod,
+            price:this.modalUser.price,
+            // status: this.orderFilter,
+            nameUz:this.modalUser.nameUz,
+            nameRu:this.modalUser.nameRu,
+            nameZh:this.modalUser.nameZh,
+            wharehouseUz:this.modalUser.warehouse,
+            // wharehouseRu:this.modalUser.warehouse,
+            // wharehouseZh:this.modalUser.warehouse,
+            wharehouse_code:this.modalUser.userCod
+          },{
+            headers:{
+              Authorization:`Bearer ${token}`
+            }
+          })
+          this.closeModal()
+        } catch{
+          console.log('error');
+        }
+    },
     openAddModal() {
       this.editMode = false;
       this.modalUser = {
@@ -199,33 +256,20 @@ export default {
       this.modalVisible = true;
     },
     openEditModal(id) {
-      this.$router.push(`/lidEdit?id=${id}`)
-      console.log(id,'edit');
+      this.$router.push(`/lidEdit?id=${id}`);
     },
     closeModal() {
       this.modalVisible = false;
     },
     saveUser() {
       if (!this.modalUser.userCod || !this.modalUser.nameUz) {
-        alert("Foydalanuvchi kodi va ismi (UZ) majburiy.");
-        return;
+        alert("Foydalanuvchi kodi va ismi (UZ) majburiy.");        
+      }else{
+        console.log('123456');
+        this.closeModal();
       }
 
-      this.modalUser.name = this.modalUser.nameUz;
 
-      if (this.editMode) {
-        const index = this.users.findIndex(u => u.id === this.modalUser.id);
-        if (index !== -1) {
-          this.$set(this.users, index, { ...this.modalUser });
-        }
-      } else {
-        this.users.push({
-          ...this.modalUser,
-          id: Date.now(),
-          create: new Date().toISOString().split("T")[0],
-        });
-      }
-      this.closeModal();
     },
     deleteUser(user) {
       if (confirm("Rostdan ham o‘chirmoqchimisiz?")) {
@@ -235,22 +279,34 @@ export default {
     viewUser(user) {
       alert(`Ismi: ${user.name}\nTel: ${user.tel}\nEmail: ${user.email}`);
     },
+    // async orderFilter1(){
+    //   if(this.orderFilter == "Yangi boshidan"){
+    //     this.orderFilter2 = "new"
+    //     const users = await axios.get('http://89.169.2.238:8002/api/v1/leads',{
+    //       sort:this.orderFilter2
+    //     })
+    //     console.log(this.orderFilter2,this.orderFilter);
+    //   } else if(this.orderFilter=="Eski boshidan"){
+    //     this.orderFilter2 = "old"
+    //     console.log(this.orderFilter2,this.orderFilter);
+    //   }
+    // },
     exportExcel() {
-      const ws = XLSX.utils.json_to_sheet(this.users);
+      const ws = XLSX.utils.json_to_sheet(this.filteredUsers);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Foydalanuvchilar");
       XLSX.writeFile(wb, "users.xlsx");
     }
   },
-  mounted(){
-    axios.get('http://localhost:3000/users')
-      .then((res)=>{
-        this.users = res.data
-        // console.log(...this.users);
-      })
-      .catch((err)=>{
-        console.log(err,'error');
-      })
+  watch: {
+  statusFilter: 'getUsers',
+  warehouseFilter: 'getUsers',
+  search: 'getUsers',
+  orderFilter: 'getUsers'
+},
+  mounted() {
+    store.state.sideNav="Lidlar",
+    this.getUsers()
   }
 };
 </script>

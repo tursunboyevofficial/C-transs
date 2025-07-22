@@ -70,7 +70,8 @@
   </template>
   
   <script>
-  import axios from "axios";
+  import store from "@/store";
+import axios from "axios";
   export default {
     data() {
       return {
@@ -119,6 +120,7 @@
       },
     },
     mounted() {
+      store.state.sideNav='Comment'
       axios
         .get("http://localhost:3000/users")
         .then((res) => {

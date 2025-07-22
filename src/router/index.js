@@ -13,6 +13,7 @@ import JonatmaQoshish from "@/pages/Jonatma/JonatmaQoshish.vue";
 import LidEdit from "@/pages/Lid/LidEdit.vue";
 import Lids from "@/pages/Lid/Lids.vue";
 import Users from "@/pages/Users/Users.vue";
+import UserEdit from "@/pages/Users/UserEdit.vue";
 
 
 
@@ -27,7 +28,7 @@ const routes = [
     component: MainLayout, 
     children: [
       {
-        path: 'dashboard',
+        path: '/dashboard',
         name: 'Dashboard',
         component: Dashboard
       },
@@ -47,7 +48,7 @@ const routes = [
         component:Buyurtmalar
       },
       {
-        path:'/buyurtmaEdit',
+        path:'/buyurtmaEdit/:id',
         name:'BuyurtmaEdit',
         component:BuyurtmaEdit
       },
@@ -85,6 +86,11 @@ const routes = [
         path:'/users',
         name:'Users',
         component:Users
+      },
+      {
+        path:'/userEdit',
+        name:'UserEdit',
+        component:UserEdit
       }
     ]
   }

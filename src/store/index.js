@@ -5,7 +5,8 @@ const store = createStore({
         return {
             isCollapsed:true,
             count:0,
-            user:null
+            user:null,
+            sideNav:"SiteNav"
         }
     }
 })

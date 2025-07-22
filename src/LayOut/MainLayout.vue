@@ -38,7 +38,7 @@ export default {
         display: flex;
         width: 100%;
         
-        overflow: hidden;
+        /* overflow: hidden; */
         
     }
     .bar{
@@ -64,8 +64,16 @@ export default {
         height: 55px;
     }
     .content{
-        
+        position: relative;
      background-color: #f5f5f5;
-        
+        z-index: 1;
     }
+    .dropdown-menu {
+  position: absolute;
+  z-index: 9999!important;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  padding: 5px 0;
+  border-radius: 6px;
+}
 </style>

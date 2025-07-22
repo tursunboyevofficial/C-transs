@@ -110,10 +110,11 @@ export default {
     background-color: rgb(230, 230, 230);
     color:#0d6efd;
 }
-.btn:focus. .bnt:focus{
+.btn:focus ,.bnt:focus{
     background-color: rgb(230, 230, 230);
     color:#0d6efd;
 }
+
 .dropdown-menu {
     border: none;
     background:none;

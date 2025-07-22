@@ -39,7 +39,7 @@
                 <li><a class="dropdown-item">Eski boshidan</a></li>
               </ul>
             </div>
-            <button class="btn " @click="toggleModal()">
+            <button class="btn " @click="buyurtmaQoshish()">
               + Jo'natma qo'shish
             </button>
           </article>
@@ -64,8 +64,8 @@
                 <td>{{ item.status }}</td>
                 <td>{{ item.date }}</td>
                 <td>
-                  <i class="icon bi bi-eye" @click="viewItem(item)"></i>
-                  <i class="icon bi bi-pencil-square" @click="editItem(item)"></i>
+                  <i class="icon bi bi-eye" @click="buyurtmaQoshish(item)"></i>
+                  <i class="icon bi bi-pencil-square" @click="buyurtmaQoshish(item)"></i>
                   <i class="icon bi bi-trash" @click="deleteItem(item.id)"></i>
                 </td>
               </tr>
@@ -97,6 +97,8 @@
   </template>
   
   <script>
+import store from '@/store';
+
   export default {
     data() {
       return {
@@ -115,6 +117,9 @@
         }
       };
     },
+    mounted() {
+      store.state.sideNav="Jo'natmalar"
+    },
     computed: {
       filteredShipments() {
         return this.shipments.filter(item =>
@@ -123,6 +128,9 @@
       }
     },
     methods: {
+      buyurtmaQoshish(){
+        this.$router.push('/jonatmaQoshish')
+      },
       toggleModal() {
         this.isModalHidden = !this.isModalHidden;
         if (this.isModalHidden) this.resetModal();

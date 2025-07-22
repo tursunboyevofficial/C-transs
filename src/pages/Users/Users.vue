@@ -48,8 +48,8 @@
               <td>{{ user.userCod }}</td>
               <td>{{ user.create }}</td>
               <td>
-                <i class="icon bi bi-eye" @click="viewUser(user)"></i>
-                <i class="icon bi bi-pencil-square" @click="editUser(user)"></i>
+                <i class="icon bi bi-eye" @click="UserEdit(user)"></i>
+                <i class="icon bi bi-pencil-square" @click="UserEdit(user)"></i>
                 <i class="icon bi bi-trash" @click="deleteUser(user.id)"></i>
               </td>
             </tr>
@@ -128,6 +128,7 @@ export default {
     };
   },
   mounted() {
+    store.state.sideNav="Userlar"
     axios.get("http://localhost:3000/users")
       .then((res) => {
         this.users = res.data.map((user) => ({
@@ -206,18 +207,9 @@ export default {
       this.modal = true;
       this.toggleModal()
     },
-    editUser(user) {
-      this.isEditMode = true;
-      this.editUserId = user.id;
-      this.newUser = {
-        newCode: user.userCod,
-        newName: user.name,
-        newEmail: user.email,
-        newPhone: user.tel,
-      };
-      this.isActive = !!user.userCod;
-      this.modal = true;
-      this.toggleModal()
+    UserEdit(user) {
+      this.$router.push('/userEdit')
+      
     },
     deleteUser(id) {
       this.users = this.users.filter((user) => user.id !== id);

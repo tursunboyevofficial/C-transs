@@ -8,7 +8,7 @@
           type="text"
           class="name"
           v-model="name"
-          placeholder="Ismingizni kiriting"
+          placeholder="emailingizni kiriting"
         />
   
         <!-- Parol input va ko‘zcha -->
@@ -24,13 +24,15 @@
         </div>
   
         <!-- Kirish tugmasi -->
-        <button class="btn btn btn-outline-primary" type="button" @click="login">Kirish</button>
+        <button class="btn btn btn-outline-primary" type="button" @click="login1" >Kirish</button>
       </div>
     </div>
   </template>
   
   <script>
-  import { ref } from 'vue'
+  import router from '@/router'
+import axios from 'axios'
+import { ref } from 'vue'
   import { useRouter } from 'vue-router'
   
   export default {
@@ -47,25 +49,45 @@
   
       const login = () => {
         if (name.value && password.value) {
-          router.push('/app/dashboard')
+
+          // router.push('/app/dashboard')
         } else {
           alert("Ism va parolni to‘ldiring")
         }
       }
+      const login1 = async () =>{
+        try {
+          const response = await axios.post('http://89.169.2.238:8002/api/v1/auth/login/admin',{
+            username: name.value,
+            password: password.value
+          })
+
+          const token = response.data.token
+          localStorage.setItem('token',token)
+          console.log('token',token);
+          router.push('/dashboard')
+        }catch(error){
+          console.log('ishlamadi', error.response?.data?.message || 'serverga ulanib bolmadi');
+        }
+      }
+
+
+      
   
       return {
+        login1,
         name,
         password,
         showPassword,
         togglePassword,
-        login
+        login,
       }
     },
     data(){
       return{
         eyesOff:""
       }
-    }
+    },
   }
   </script>
   
